@@ -1,8 +1,8 @@
 const hre = require("hardhat");
 
 const FACTORY_NONCE = 1;
-const FACTORY_ADDRESS = "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0"; 
-const EP_ADDRESS = "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9";
+const FACTORY_ADDRESS = "0x5FbDB2315678afecb367f032d93F642f64180aa3"; 
+const EP_ADDRESS = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
 
 async function main() {
     const [signer0] = await hre.ethers.getSigners();
@@ -14,14 +14,14 @@ async function main() {
         nonce: FACTORY_NONCE
     });
     const AccountFactory = await hre.ethers.getContractFactory("AccountFactory");
-    const initCode = FACTORY_ADDRESS + AccountFactory.interface.encodeFunctionData("createAccount", [address0]).slice(2);
+    console.log(`The Smart Account address is ${sender}`);
+    const initCode = "0x";
+    // const initCode = FACTORY_ADDRESS + AccountFactory.interface.encodeFunctionData("createAccount", [address0]).slice(2);
     await entrypoint.depositTo(sender, {
         value: hre.ethers.parseEther("100")
     });
 
     const Account = await hre.ethers.getContractFactory("Account");
-    const v = await entrypoint.getNonce(sender, 0);
-    console.log(v);
 
     // callData related to the part starting from the Smart Account - depends on what the user would want to be execute. any logic
     // struct PackedUserOperation {
