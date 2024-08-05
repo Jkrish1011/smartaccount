@@ -16,11 +16,11 @@ async function main() {
     });
     const AccountFactory = await hre.ethers.getContractFactory("AccountFactory");
     console.log(`The Smart Account address is ${sender}`);
-    const initCode = "0x";
-    // const initCode = FACTORY_ADDRESS + AccountFactory.interface.encodeFunctionData("createAccount", [address0]).slice(2);
-    // await entrypoint.depositTo(PAYMASTER_ADDRESS, {
-    //     value: hre.ethers.parseEther("100")
-    // });
+    // const initCode = "0x";
+    const initCode = FACTORY_ADDRESS + AccountFactory.interface.encodeFunctionData("createAccount", [address0]).slice(2);
+    await entrypoint.depositTo(PAYMASTER_ADDRESS, {
+        value: hre.ethers.parseEther("100")
+    });
 
     const Account = await hre.ethers.getContractFactory("Account");
 
@@ -48,7 +48,8 @@ async function main() {
     //     paymasterAndData: "0x",
     //     signature: "0x"
     // };
-   
+    
+
     // 0.6.0 version of aa
     const userOp = {
         sender,
@@ -61,8 +62,11 @@ async function main() {
         maxFeePerGas:hre.ethers.parseUnits("10", "gwei"),
         maxPriorityFeePerGas: hre.ethers.parseUnits("10", "gwei"),
         paymasterAndData: PAYMASTER_ADDRESS,
-        signature: "0x"
+        signature: signer0.signMessage(hre.ethers.getBytes(hre.ethers.id("wee")))
     };
+    
+    // const userOpHash = await entrypoint.getUserOpHash(userOp);
+
     console.log(userOp);
     const tx = await entrypoint.handleOps([userOp], address0);
     const receipt = await tx.wait();
