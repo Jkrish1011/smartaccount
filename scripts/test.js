@@ -11,14 +11,14 @@ async function main() {
     console.log(count);
 
     // To check the balance of Paymaster
-    // console.log(`account-balance`, await hre.ethers.provider.getBalance(ACCOUNT_ADDR));
+    console.log(`account-balance`, await hre.ethers.provider.getBalance(ACCOUNT_ADDR));
 
-    // // To check the balance of Entrypoint
-    // const entrypoint = await hre.ethers.getContractAt("EntryPoint", EP_ADDRESS);
-    // console.log(`account-balance-ep`, await entrypoint.balanceOf(ACCOUNT_ADDR));
+    // To check the balance of Entrypoint
+    const entrypoint = await hre.ethers.getContractAt("EntryPoint", EP_ADDRESS);
+    console.log(`account-balance-ep`, await entrypoint.balanceOf(ACCOUNT_ADDR));
     
-    // // To check the balance of Paymaster
-    // console.log(`account-balance-ep`, await entrypoint.balanceOf(PAYMASTER_ADDRESS));
+    // To check the balance of Paymaster
+    console.log(`account-balance-ep`, await entrypoint.balanceOf(PAYMASTER_ADDRESS));
 
 }
 
