@@ -1,6 +1,6 @@
 const hre = require("hardhat");
 
-const FACTORY_NONCE = 1;
+
 const FACTORY_ADDRESS = "0x5FbDB2315678afecb367f032d93F642f64180aa3"; 
 const EP_ADDRESS = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
 const PAYMASTER_ADDRESS = "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0";
@@ -10,17 +10,26 @@ async function main() {
     const address0 = await signer0.getAddress();
     const entrypoint = await hre.ethers.getContractAt("EntryPoint", EP_ADDRESS);
 
-    const sender = await hre.ethers.getCreateAddress({
-        from: FACTORY_ADDRESS,
-        nonce: FACTORY_NONCE
-    });
+    
     const AccountFactory = await hre.ethers.getContractFactory("AccountFactory");
+    
+    let initCode = FACTORY_ADDRESS + AccountFactory.interface.encodeFunctionData("createAccount", [address0]).slice(2);;
+    let sender;
+    try{
+        await entrypoint.getSenderAddress(initCode);
+    }catch(ex){
+        console.log(ex.data.data.slice(-40));
+        sender = "0x" + ex.data.data.slice(-40);
+    }
+
     console.log(`The Smart Account address is ${sender}`);
-    const initCode = "0x";
-    // const initCode = FACTORY_ADDRESS + AccountFactory.interface.encodeFunctionData("createAccount", [address0]).slice(2);
-    // await entrypoint.depositTo(PAYMASTER_ADDRESS, {
-    //     value: hre.ethers.parseEther("100")
-    // });
+
+    const code = await ethers.provider.getCode(sender);
+    if(code !== "0x"){
+        // Deploying smart account for the first time
+        initCode = "0x";
+    } 
+
 
     const Account = await hre.ethers.getContractFactory("Account");
 
