@@ -1,11 +1,12 @@
 const hre = require("hardhat");
 
 
-const FACTORY_ADDRESS = "0xAB416e95fDA482A2cBde8C8Aca6b2A2e3Ff06C55"; 
+const FACTORY_ADDRESS = "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707"; 
 // const EP_ADDRESS = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512"; // Local entrypoint
 // Alchemy's entrypoint on arb sepolia testnet
-const EP_ADDRESS = "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789";
-const PAYMASTER_ADDRESS = "0xCfFB26ce5F42F562Ce08B1f7c7b734EdB6198CDc";
+const EP_ADDRESS = "0x0165878A594ca255338adfa4d48449f69242Eb8F";
+const PAYMASTER_ADDRESS = "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853";
+const VISIONCHAIN_ADDRESS = "0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6";
 
 async function main() {
     const [signer0] = await hre.ethers.getSigners();

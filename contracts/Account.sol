@@ -6,6 +6,7 @@ import "@account-abstraction/contracts/core/EntryPoint.sol";
 import "@account-abstraction/contracts/interfaces/IAccount.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/utils/Create2.sol";
+import "./Visionchain.sol";
 
 // import "hardhat/console.sol";
 
@@ -43,6 +44,15 @@ contract Account is IAccount {
 
     function executeCustomLogic() external {
         count++;
+    }
+
+    function mintVisionChainNFT(
+        address _receiverAddress,
+        address _visionchainDeployedContractAddress,
+        uint256 _amount
+    ) external {
+        Visionchain _vc = Visionchain(_visionchainDeployedContractAddress);
+        _vc.mint(_receiverAddress, _amount);
     }
 }
 
