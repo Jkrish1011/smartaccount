@@ -2,11 +2,9 @@ const hre = require("hardhat");
 
 
 const FACTORY_ADDRESS = "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707"; 
-// const EP_ADDRESS = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512"; // Local entrypoint
-// Alchemy's entrypoint on arb sepolia testnet
 const EP_ADDRESS = "0x0165878A594ca255338adfa4d48449f69242Eb8F";
 const PAYMASTER_ADDRESS = "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853";
-const VISIONCHAIN_ADDRESS = "0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6";
+const VISIONCHAINNFT_ADDRESS = "0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6";
 
 async function main() {
     const [signer0] = await hre.ethers.getSigners();
@@ -21,11 +19,11 @@ async function main() {
     try{
         await entrypoint.getSenderAddress(initCode);
     }catch(ex){
-        sender = "0x" + ex.data.slice(-40);
+        console.log(ex.data.data.slice(-40));
+        sender = "0x" + ex.data.data.slice(-40);
     }
 
     console.log(`The Smart Account address is ${sender}`);
-    console.log({sender});
 
     const code = await ethers.provider.getCode(sender);
     if(code !== "0x"){
@@ -65,47 +63,25 @@ async function main() {
     // 0.6.0 version of aa
     let userOp = {
         sender,
-        // nonce: await entrypoint.getNonce(sender, 0), // older version
-        nonce: "0x" + (await entrypoint.getNonce(sender, 0)).toString(16), // for alchemy
+        nonce: await entrypoint.getNonce(sender, 0),
         initCode,
-        callData: Account.interface.encodeFunctionData("executeCustomLogic"), 
+        callData: Account.interface.encodeFunctionData("mintVisionChainNFT", ["0x23618e81E3f5cdF7f54C3d65f7FBc0aBf5B21E8f", VISIONCHAINNFT_ADDRESS, hre.ethers.parseUnits("10", "gwei")]), 
+        callGasLimit: 800_000,
+        verificationGasLimit: 800_000,
+        preVerificationGas: 800_000,
+        maxFeePerGas:hre.ethers.parseUnits("20", "gwei"),
+        maxPriorityFeePerGas: hre.ethers.parseUnits("20", "gwei"),
         paymasterAndData: PAYMASTER_ADDRESS,
-        signature: "0xfffffffffffffffffffffffffffffff0000000000000000000000000000000007aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa1c" // dummy value for alchemy api
+        signature: "0x"
     };
-
-    const {preVerificationGas, callGasLimit, verificationGasLimit} = await ethers.provider.send("eth_estimateUserOperationGas", [
-        userOp,
-        EP_ADDRESS
-    ]);
     
-    userOp.preVerificationGas = preVerificationGas;
-    userOp.callGasLimit = callGasLimit;
-    userOp.verificationGasLimit = verificationGasLimit;
-
-    const {maxFeePerGas} = await ethers.provider.getFeeData();
-    userOp.maxFeePerGas = "0x"+ maxFeePerGas.toString(16); // to get it as a hex encoded string for the alchemy api
-
-    const maxPriorityFeePerGas = await ethers.provider.send("rundler_maxPriorityFeePerGas");
-    userOp.maxPriorityFeePerGas = maxPriorityFeePerGas;
-
     const userOpHash = await entrypoint.getUserOpHash(userOp);
     userOp.signature = await signer0.signMessage(hre.ethers.getBytes(userOpHash));
 
-    // eth_sendUserOperation - instead of sending the userop to entrypoint, we do it with the bundler service
-    const opHash = await ethers.provider.send("eth_sendUserOperation", [userOp, EP_ADDRESS]);
-    console.log(opHash);
-
-    // Adding timeout to adjust for the time the bundler service is taking to execute the transaction.
-    setTimeout(async () => {
-        const { transactionHash } = await ethers.provider.send("eth_getUserOperationByHash", [opHash]);
-        console.log(transactionHash);
-    }, 5000);
-    
-
-    // console.log(userOp);
-    // const tx = await entrypoint.handleOps([userOp], address0);
-    // const receipt = await tx.wait();
-    // console.log(receipt);
+    console.log(userOp);
+    const tx = await entrypoint.handleOps([userOp], address0);
+    const receipt = await tx.wait();
+    console.log(receipt);
 }
 
 main().catch((error) => {

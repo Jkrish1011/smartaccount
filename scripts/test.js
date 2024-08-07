@@ -7,18 +7,18 @@ const PAYMASTER_ADDRESS = "0xCfFB26ce5F42F562Ce08B1f7c7b734EdB6198CDc";
 async function main() {
     const account = await hre.ethers.getContractAt("Account", ACCOUNT_ADDR);
     const count = await account.count();
-
+    
     console.log(count);
 
     // To check the balance of Paymaster
-    console.log(`account-balance`, await hre.ethers.provider.getBalance(ACCOUNT_ADDR));
+    console.log(`account-balance-pm`, await hre.ethers.provider.getBalance(ACCOUNT_ADDR));
 
     // To check the balance of Entrypoint
     const entrypoint = await hre.ethers.getContractAt("EntryPoint", EP_ADDRESS);
     console.log(`account-balance-ep`, await entrypoint.balanceOf(ACCOUNT_ADDR));
     
     // To check the balance of Paymaster
-    console.log(`account-balance-ep`, await entrypoint.balanceOf(PAYMASTER_ADDRESS));
+    console.log(`account-balance-pm`, await entrypoint.balanceOf(PAYMASTER_ADDRESS));
 
 }
 

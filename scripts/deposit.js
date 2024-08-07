@@ -9,7 +9,7 @@ async function main() {
 
 
     await entrypoint.depositTo(PAYMASTER_ADDRESS, {
-        value: hre.ethers.parseEther("0.05")
+        value: hre.ethers.parseEther("5")
     });
 
     console.log('Deposit was successful for Paymaster in Entrypoint');
