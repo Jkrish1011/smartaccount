@@ -6,6 +6,8 @@ import "@account-abstraction/contracts/core/EntryPoint.sol";
 import "@account-abstraction/contracts/interfaces/IAccount.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/utils/Create2.sol";
+import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import "./Visionchain.sol";
 
 // import "hardhat/console.sol";
 
@@ -21,10 +23,14 @@ import "@openzeppelin/contracts/utils/Create2.sol";
 
 contract Account is IAccount {
     uint256 public count;
+   // address public nftContractAddress;
     address public owner;
+    //uint256 public tokenId;
 
     constructor(address _owner) {
         owner = _owner;
+        // nftContractAddress = _nftContractAddress;
+        // tokenId = _tokenId;
     }
 
     // This function is used to validate the user operation is coming from the owner and not from anyone else.
@@ -43,6 +49,15 @@ contract Account is IAccount {
 
     function executeCustomLogic() external {
         count++;
+    }
+
+    function mintVisionChainNFT(
+        address _receiverAddress,
+        address _visionchainDeployedContractAddress,
+        uint256 _amount
+    ) external {
+        Visionchain _vc = Visionchain(_visionchainDeployedContractAddress);
+        _vc.mint(_receiverAddress, _amount);
     }
 }
 

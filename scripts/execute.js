@@ -5,9 +5,17 @@ const FACTORY_ADDRESS = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
 const EP_ADDRESS = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
 const PAYMASTER_ADDRESS = "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0";
 
+// const FACTORY_ADDRESS = "0x9A9f2CCfdE556A7E9Ff0848998Aa4a0CFD8863AE"; 
+// const EP_ADDRESS = "0x68B1D87F95878fE05B998F19b66F4baba5De1aed";
+// const PAYMASTER_ADDRESS = "0x3Aa5ebB10DC797CAC828524e59A333d0A371443c";
+const VISIONCHAINNFT_ADDRESS = "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9";
+
+
 async function main() {
     const [signer0] = await hre.ethers.getSigners();
     const address0 = await signer0.getAddress();
+    // const nftContractAddress = "0x1613beB3B2C4f22Ee086B2b38C1476A3cE7f78E8";
+    // const tokenId = 1
     const entrypoint = await hre.ethers.getContractAt("EntryPoint", EP_ADDRESS);
 
     
@@ -59,20 +67,35 @@ async function main() {
     // };
     
 
-    // 0.6.0 version of aa
-    let userOp = {
-        sender,
-        nonce: await entrypoint.getNonce(sender, 0),
-        initCode,
-        callData: Account.interface.encodeFunctionData("executeCustomLogic"), 
-        callGasLimit: 400_000,
-        verificationGasLimit: 400_000,
-        preVerificationGas: 400_000,
-        maxFeePerGas:hre.ethers.parseUnits("10", "gwei"),
-        maxPriorityFeePerGas: hre.ethers.parseUnits("10", "gwei"),
-        paymasterAndData: PAYMASTER_ADDRESS,
-        signature: "0x"
-    };
+    // // 0.6.0 version of aa
+    // let userOp = {
+    //     sender,
+    //     nonce: await entrypoint.getNonce(sender, 0),
+    //     initCode,
+    //     callData: Account.interface.encodeFunctionData("executeCustomLogic"), 
+    //     callGasLimit: 400_000,
+    //     verificationGasLimit: 400_000,
+    //     preVerificationGas: 400_000,
+    //     maxFeePerGas:hre.ethers.parseUnits("10", "gwei"),
+    //     maxPriorityFeePerGas: hre.ethers.parseUnits("10", "gwei"),
+    //     paymasterAndData: PAYMASTER_ADDRESS,
+    //     signature: "0x"
+    // };
+
+        // 0.6.0 version of aa
+        let userOp = {
+            sender,
+            nonce: await entrypoint.getNonce(sender, 0),
+            initCode,
+            callData: Account.interface.encodeFunctionData("mintVisionChainNFT", ["0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC", VISIONCHAINNFT_ADDRESS, hre.ethers.parseUnits("10", "gwei")]), 
+            callGasLimit: 800_000,
+            verificationGasLimit: 800_000,
+            preVerificationGas: 800_000,
+            maxFeePerGas:hre.ethers.parseUnits("20", "gwei"),
+            maxPriorityFeePerGas: hre.ethers.parseUnits("20", "gwei"),
+            paymasterAndData: PAYMASTER_ADDRESS,
+            signature: "0x"
+        };
     
     const userOpHash = await entrypoint.getUserOpHash(userOp);
     userOp.signature = await signer0.signMessage(hre.ethers.getBytes(userOpHash));

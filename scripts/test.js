@@ -1,10 +1,15 @@
 const hre = require("hardhat");
 
-const ACCOUNT_ADDR = "0x91d50cd9964b97283a97e3d6fccd9ff1559f2297";
-const EP_ADDRESS = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
-const PAYMASTER_ADDRESS = "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0";
+const ACCOUNT_ADDR = "0xe7c052da32fe52f884e3d94c3d8f988a770cc438";
+const EP_ADDRESS = "0x68B1D87F95878fE05B998F19b66F4baba5De1aed";
+const PAYMASTER_ADDRESS = "0x3Aa5ebB10DC797CAC828524e59A333d0A371443c";
 
 async function main() {
+
+  const nftContractAddress = "0x1613beB3B2C4f22Ee086B2b38C1476A3cE7f78E8";
+    const tokenId = 1
+
+
     const account = await hre.ethers.getContractAt("Account", ACCOUNT_ADDR);
     const count = await account.count();
 
@@ -19,7 +24,12 @@ async function main() {
     
     // To check the balance of Paymaster
     console.log(`account-balance-ep`, await entrypoint.balanceOf(PAYMASTER_ADDRESS));
+    const tx = await account.mintNFT(nftContractAddress, tokenId);
+    console.log("transaction", tx)
+    console.log(`MintNFT transaction hash: ${tx.hash}`);
 
+    await tx.wait();
+    console.log('NFT minting confirmed!');
 }
 
 main().catch((error) => {
